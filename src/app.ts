@@ -11,14 +11,24 @@ app.get("/", async (req, res) => {
     { responseType: "text" }
   );
 
-  const jobs = [];
+  const mojeDeloJobs = [];
 
   if (htmlResponse.data && typeof(htmlResponse.data) == "string") {
     const parsedHTML = new jsdom.JSDOM(htmlResponse.data);
-    parsedHTML.window.document.querySelectorAll('.job-ad .title').forEach(element => jobs.push(element.textContent));
-    console.log(jobs);
+    parsedHTML.window.document.querySelectorAll('.job-ad .title').forEach(element => mojeDeloJobs.push(element.textContent));
+    console.log(mojeDeloJobs);
   }
-  res.send({"jobs": jobs});
+
+  const slotechResponse = await axios.get("https://slo-tech.com/delo", {responseType: "text"});
+  const slotechJobs = [];
+
+  if (slotechResponse.data && typeof(slotechResponse.data) == "string") {
+    const parsedHTML = new jsdom.JSDOM(slotechResponse.data);
+    parsedHTML.window.document.querySelectorAll('.forums .name').forEach(element => slotechJobs.push(element.textContent));
+    console.log(slotechJobs);
+  }
+
+  res.send({ mojeDeloJobs, slotechJobs });
 });
 
 app.listen(port, () => {
